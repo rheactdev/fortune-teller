@@ -1,0 +1,12 @@
+/* Webfont: LiberGrotesqueFamily-ExLtObl */@font-face {
+    font-family: 'ExtraLight';
+    src: url('LiberGrotesqueFamily-ExLtObl.eot'); /* IE9 Compat Modes */
+    src: url('LiberGrotesqueFamily-ExLtObl.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('LiberGrotesqueFamily-ExLtObl.woff') format('woff'), /* Modern Browsers */
+         url('LiberGrotesqueFamily-ExLtObl.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('LiberGrotesqueFamily-ExLtObl.svg#LiberGrotesqueFamily-ExLtObl') format('svg'); /* Legacy iOS */
+    font-style: italic;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+

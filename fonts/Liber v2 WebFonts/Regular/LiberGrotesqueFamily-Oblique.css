@@ -1,0 +1,12 @@
+/* Webfont: LiberGrotesqueFamily-Oblique */@font-face {
+    font-family: 'Regular';
+    src: url('LiberGrotesqueFamily-Oblique.eot'); /* IE9 Compat Modes */
+    src: url('LiberGrotesqueFamily-Oblique.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('LiberGrotesqueFamily-Oblique.woff') format('woff'), /* Modern Browsers */
+         url('LiberGrotesqueFamily-Oblique.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('LiberGrotesqueFamily-Oblique.svg#LiberGrotesqueFamily-Oblique') format('svg'); /* Legacy iOS */
+    font-style: italic;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+

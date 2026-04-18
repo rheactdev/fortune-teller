@@ -1,0 +1,12 @@
+/* Webfont: LiberGrotesqueFamily-Bold */@font-face {
+    font-family: 'Bold';
+    src: url('LiberGrotesqueFamily-Bold.eot'); /* IE9 Compat Modes */
+    src: url('LiberGrotesqueFamily-Bold.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+         url('LiberGrotesqueFamily-Bold.woff') format('woff'), /* Modern Browsers */
+         url('LiberGrotesqueFamily-Bold.ttf') format('truetype'), /* Safari, Android, iOS */
+         url('LiberGrotesqueFamily-Bold.svg#LiberGrotesqueFamily-Bold') format('svg'); /* Legacy iOS */
+    font-style: normal;
+    font-weight: normal;
+    text-rendering: optimizeLegibility;
+}
+
