@@ -43,7 +43,7 @@
       --bg: #0d0a1a;
       --text: #ddd3fd;
       --text-muted: #9282bc;
-      --text-hint: #4e3a7d;
+      --text-hint: #524175;
       --input-bg: rgba(255, 255, 255, 0.06);
       --input-border: rgba(180, 140, 255, 0.3);
       --input-focus: rgba(180, 140, 255, 0.7);
@@ -101,9 +101,8 @@
     }
 
     .subtitle {
-      font-size: 15px;
+      font-size: 17px;
       color: var(--text-muted);
-      /* letter-spacing: 1px; */
       margin-bottom: 2.5rem;
     }
 
@@ -410,6 +409,10 @@
       background: radial-gradient(ellipse, rgba(80, 40, 180, 0.5) 0%, transparent 70%);
       border-radius: 50%;
     }
+
+    #tsparticles {
+      opacity: 50%;
+    }
   </style>
 </head>
 
@@ -504,7 +507,7 @@
       <button class="ask-btn" onclick="askQ()">Ask <span class="sparkle-icon"></span></button>
     </div>
 
-    <div class="legend">
+    <!-- <div class="legend">
       <span><span class="dot dot-yes"></span>yes</span>
       <div class="divider"></div>
       <span><span class="dot dot-maybe"></span>maybe</span>
@@ -512,7 +515,7 @@
       <span><span class="dot dot-no"></span>no</span>
       <div class="divider"></div>
       <span>15 answers</span>
-    </div>
+    </div> -->
   </div>
 
   <style>
