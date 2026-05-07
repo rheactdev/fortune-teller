@@ -1,4 +1,12 @@
 import './style.css';
+import lottie from 'lottie-web';
+import cloudData from './assets/icons8-cloud.json';
+import sparkleData from './assets/icons8-sparkle.json';
+import { tsParticles } from "@tsparticles/engine";
+import { loadFull } from "tsparticles";
+
+// Initialize tsParticles
+await loadFull(tsParticles);
 
 let busy = false;
 
@@ -29,16 +37,21 @@ const COLORS = {
 
 const RANDOM_ORG_API_URL = "https://api.random.org/json-rpc/4/invoke";
 
-function getFallbackAnswerIndex() {
+function getFilteredAnswers() {
+  const isStrict = document.getElementById('strictToggle')?.checked;
+  return isStrict ? ANSWERS.filter(a => a.cat !== 'maybe') : ANSWERS;
+}
+
+function getFallbackAnswerIndex(pool) {
   if (window.crypto?.getRandomValues) {
     const randomValues = new Uint32Array(1);
     window.crypto.getRandomValues(randomValues);
-    return randomValues[0] % ANSWERS.length;
+    return randomValues[0] % pool.length;
   }
-  return Math.floor(Math.random() * ANSWERS.length);
+  return Math.floor(Math.random() * pool.length);
 }
 
-async function getRandomOrgAnswerIndex() {
+async function getRandomOrgAnswerIndex(pool) {
   const apiKey = import.meta.env.VITE_RANDOM_ORG_API_KEY;
 
   if (!apiKey) {
@@ -55,7 +68,7 @@ async function getRandomOrgAnswerIndex() {
         apiKey,
         n: 1,
         min: 0,
-        max: ANSWERS.length - 1,
+        max: pool.length - 1,
         replacement: true,
       },
       id: window.crypto?.randomUUID?.() || Date.now(),
@@ -74,19 +87,20 @@ async function getRandomOrgAnswerIndex() {
 
   const index = payload.result?.random?.data?.[0];
 
-  if (!Number.isInteger(index) || index < 0 || index >= ANSWERS.length) {
+  if (!Number.isInteger(index) || index < 0 || index >= pool.length) {
     throw new Error('RANDOM.ORG returned an invalid answer index.');
   }
 
   return index;
 }
 
-async function getAnswerIndex() {
+async function getAnswer(pool) {
   try {
-    return await getRandomOrgAnswerIndex();
+    const index = await getRandomOrgAnswerIndex(pool);
+    return pool[index];
   } catch (error) {
     console.warn('Falling back to browser randomness:', error.message);
-    return getFallbackAnswerIndex();
+    return pool[getFallbackAnswerIndex(pool)];
   }
 }
 
@@ -98,7 +112,7 @@ function loadSparkles(container = document) {
       renderer: 'svg',
       loop: true,
       autoplay: true,
-      path: '/icons8-sparkle.json' // Added leading slash for public dir
+      animationData: sparkleData
     });
   });
 }
@@ -111,7 +125,7 @@ lottie.loadAnimation({
   renderer: 'svg',
   loop: true,
   autoplay: true,
-  path: '/icons8-cloud.json'
+  animationData: cloudData
 });
 
 lottie.loadAnimation({
@@ -119,7 +133,7 @@ lottie.loadAnimation({
   renderer: 'svg',
   loop: true,
   autoplay: true,
-  path: '/icons8-sparkle.json'
+  animationData: sparkleData
 });
 
 lottie.loadAnimation({
@@ -127,35 +141,38 @@ lottie.loadAnimation({
   renderer: 'svg',
   loop: true,
   autoplay: true,
-  path: '/icons8-sparkle.json'
+  animationData: sparkleData
 });
 
 // Starfield with tsParticles
-tsParticles.load("tsparticles", {
-  fullScreen: { enable: false },
-  particles: {
-    number: { value: 120, density: { enable: true, area: 800 } },
-    color: { value: "#ffffff" },
-    shape: { type: "circle" },
-    opacity: {
-      value: { min: 0.1, max: 0.8 },
-      animation: { enable: true, speed: 1, sync: false }
+await tsParticles.load({
+  id: "tsparticles",
+  options: {
+    fullScreen: { enable: true, zIndex: 0 },
+    particles: {
+      number: { value: 120, density: { enable: true, area: 800 } },
+      color: { value: "#ffffff" },
+      shape: { type: "circle" },
+      opacity: {
+        value: { min: 0.1, max: 0.8 },
+        animation: { enable: true, speed: 1, sync: false }
+      },
+      size: { value: { min: 1, max: 2.5 } },
+      move: {
+        enable: true,
+        speed: 0.3,
+        direction: "none",
+        random: true,
+        straight: false,
+        outModes: { default: "out" }
+      }
     },
-    size: { value: { min: 1, max: 2.5 } },
-    move: {
-      enable: true,
-      speed: 0.3,
-      direction: "none",
-      random: true,
-      straight: false,
-      outModes: { default: "out" }
-    }
-  },
-  interactivity: {
-    events: { onHover: { enable: true, mode: "bubble" } },
-    modes: { bubble: { size: 5, distance: 100, duration: 2, opacity: 1, color: "#c0a0ff" } }
-  },
-  retina_detect: true
+    interactivity: {
+      events: { onHover: { enable: true, mode: "bubble" } },
+      modes: { bubble: { size: 5, distance: 100, duration: 2, opacity: 1, color: "#c0a0ff" } }
+    },
+    retina_detect: true
+  }
 });
 
 function setOrbColor(cat) {
@@ -185,7 +202,8 @@ async function revealAnswer(question) {
 
   setTimeout(async () => {
     try {
-      const pick = ANSWERS[await getAnswerIndex()];
+      const pool = getFilteredAnswers();
+      const pick = await getAnswer(pool);
       setOrbColor(pick.cat);
 
       const c = COLORS[pick.cat];

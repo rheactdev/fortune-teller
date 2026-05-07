@@ -67,7 +67,7 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: 0;
-  opacity: 50%;
+  opacity: 70%;
 }
 
 .app {
@@ -111,6 +111,7 @@ body::before {
 }
 
 @keyframes float {
+
   0%,
   100% {
     transform: translateY(0px);
@@ -122,6 +123,7 @@ body::before {
 }
 
 @keyframes shake {
+
   0%,
   100% {
     transform: translateX(0);
@@ -163,6 +165,7 @@ body::before {
 }
 
 @keyframes pulse {
+
   0%,
   100% {
     transform: scale(1);
@@ -394,7 +397,93 @@ body::before {
   border-radius: 50%;
 }
 
+/* Strict Mode Toggle */
+.strict-mode-toggle {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(180, 140, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 999px;
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(180, 140, 255, 0.4);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.strict-mode-toggle:hover {
+  background: rgba(180, 140, 255, 0.2);
+  border-color: rgba(180, 140, 255, 0.6);
+  transform: translateY(-1px);
+}
+
+.strict-label {
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* Switch Styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: .4s;
+  border: 1px solid rgba(180, 140, 255, 0.3);
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 3px;
+  bottom: 3px;
+  background-color: var(--text-muted);
+  transition: .4s;
+}
+
+input:checked+.slider {
+  background-color: rgba(160, 100, 255, 0.2);
+  border-color: var(--orb-idle2);
+}
+
+input:checked+.slider:before {
+  transform: translateX(14px);
+  background-color: var(--orb-idle2);
+  box-shadow: 0 0 8px var(--glow-idle);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
 @keyframes cloudDrift {
+
   0%,
   100% {
     transform: translateX(0)
