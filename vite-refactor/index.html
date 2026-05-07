@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icons8-clock.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Audentus</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+  </head>
+  <body>
+    <div id="tsparticles"></div>
+
+    <div class="app">
+      <p class="title">Crystal Ball</p>
+      <p class="subtitle">Your destiny awaits.</p>
+
+      <div style="position:relative">
+        <div class="orb-wrap" id="orb" title="Tap to reveal your fate">
+          <div class="orb-glow" id="orbGlow"></div>
+
+          <!-- Lottie Layers -->
+          <div id="lottie-clouds" class="lottie-layer clouds-layer"></div>
+          <div id="lottie-sparkles" class="lottie-layer sparkles-layer"></div>
+
+          <svg class="orb-svg" id="orbSvg" viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="g1" cx="38%" cy="33%" r="62%">
+                <stop offset="0%" stop-color="#ede0ff" id="gs0" />
+                <stop offset="42%" stop-color="#c4a0f8" id="gs1" />
+                <stop offset="100%" stop-color="#7c50d8" id="gs2" />
+              </radialGradient>
+              <radialGradient id="shine" cx="32%" cy="28%" r="42%">
+                <stop offset="0%" stop-color="white" stop-opacity="0.55" />
+                <stop offset="100%" stop-color="white" stop-opacity="0" />
+              </radialGradient>
+              <radialGradient id="innerGlow" cx="50%" cy="55%" r="50%">
+                <stop offset="0%" stop-color="#c0a0ff" stop-opacity="0.25" />
+                <stop offset="100%" stop-color="#8060e0" stop-opacity="0" />
+              </radialGradient>
+              <clipPath id="orbClip">
+                <circle cx="120" cy="112" r="88" />
+              </clipPath>
+              <filter id="softBlur">
+                <feGaussianBlur stdDeviation="2" />
+              </filter>
+            </defs>
+
+            <!-- Outer halo -->
+            <circle cx="120" cy="112" r="100" fill="#a080e0" fill-opacity="0.08" />
+            <circle cx="120" cy="112" r="95" fill="none" stroke="#c0a0f8" stroke-width="1" stroke-opacity="0.2" />
+
+            <!-- Main orb -->
+            <circle cx="120" cy="112" r="88" fill="url(#g1)" />
+
+            <!-- Inner content (clouds, stars) -->
+            <!-- Lottie will handle clouds and stars -->
+            </g>
+
+            <!-- Shine overlay -->
+            <circle cx="120" cy="112" r="88" fill="url(#shine)" />
+            <circle cx="120" cy="112" r="88" fill="url(#innerGlow)" />
+
+            <!-- Highlight -->
+            <ellipse cx="98" cy="80" rx="26" ry="13" fill="white" fill-opacity="0.18" transform="rotate(-28 98 80)" />
+
+            <!-- Stand -->
+            <ellipse cx="120" cy="205" rx="50" ry="10" fill="#3a2870" fill-opacity="0.5" />
+            <path d="M80 198 Q72 208 68 214 Q90 214 104 207Z" fill="#5a4090" />
+            <path d="M160 198 Q168 208 172 214 Q150 214 136 207Z" fill="#5a4090" />
+            <rect x="96" y="194" width="48" height="14" rx="5" fill="#5a4090" />
+            <ellipse cx="120" cy="194" rx="40" ry="9" fill="#7060b0" />
+            <ellipse cx="120" cy="192" rx="38" ry="7" fill="#9080c8" />
+
+            <!-- Crescent -->
+            <text x="120" y="175" text-anchor="middle" font-size="10" fill="#c0b0f0" fill-opacity="0.6"
+              font-family="'National Park'">☽</text>
+          </svg>
+
+          <div class="base-shadow"></div>
+        </div>
+
+        <!-- Floating Lottie Sparkles -->
+        <div id="lottie-bg-sparkles" class="lottie-layer"></div>
+      </div>
+
+      <div class="answer-area" id="answerArea">
+        <div class="idle-msg" id="idleMsg">Ask a question or<br>tap the orb to reveal your fate</div>
+        <div style="display:none" id="answerBlock">
+          <div class="answer-text" id="answerText"></div>
+          <div class="question-echo" id="questionEcho"></div>
+        </div>
+      </div>
+
+      <div class="input-row">
+        <input class="q-input" type="text" id="qInput" placeholder="Will I get the job? Am I lucky today?" maxlength="120">
+        <button class="ask-btn" id="askBtn">Ask <span class="sparkle-icon"></span></button>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
+

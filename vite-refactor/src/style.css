@@ -1,0 +1,406 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=National+Park:wght@200..800&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --orb-idle1: #ede0ff;
+  --orb-idle2: #c4a0f8;
+  --orb-idle3: #7c50d8;
+  --orb-yes1: #b8f0c0;
+  --orb-yes2: #60c878;
+  --orb-yes3: #1a7030;
+  --orb-no1: #ffc0c0;
+  --orb-no2: #e07070;
+  --orb-no3: #8a2020;
+  --orb-maybe1: #fff0a0;
+  --orb-maybe2: #e8c030;
+  --orb-maybe3: #806000;
+  --glow-idle: rgba(160, 100, 255, 0.45);
+  --glow-yes: rgba(60, 180, 80, 0.45);
+  --glow-no: rgba(220, 60, 60, 0.45);
+  --glow-maybe: rgba(220, 180, 20, 0.45);
+  --answer-yes: #2a8a40;
+  --answer-no: #c03030;
+  --answer-maybe: #8a6000;
+  --bg: #0d0a1a;
+  --text: #ddd3fd;
+  --text-muted: #9282bc;
+  --text-hint: #524175;
+  --input-bg: rgba(255, 255, 255, 0.06);
+  --input-border: rgba(180, 140, 255, 0.3);
+  --input-focus: rgba(180, 140, 255, 0.7);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'National Park', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  overflow-x: hidden;
+}
+
+/* Starfield background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(100, 60, 200, 0.15) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 80%, rgba(60, 20, 120, 0.2) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 0%, rgba(140, 80, 255, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+#tsparticles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 50%;
+}
+
+.app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 520px;
+}
+
+.title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  letter-spacing: 4px;
+  color: var(--text);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.subtitle {
+  font-size: 17px;
+  color: var(--text-muted);
+  margin-bottom: 2.5rem;
+}
+
+/* ORB */
+.orb-wrap {
+  position: relative;
+  width: 240px;
+  height: 240px;
+  cursor: pointer;
+  animation: float 3.5s ease-in-out infinite;
+  margin-bottom: 1rem;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.orb-wrap.shaking {
+  animation: shake 0.55s ease-in-out forwards;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  15% {
+    transform: translateX(-8px) rotate(-1deg);
+  }
+
+  30% {
+    transform: translateX(8px) rotate(1deg);
+  }
+
+  45% {
+    transform: translateX(-6px);
+  }
+
+  60% {
+    transform: translateX(6px);
+  }
+
+  75% {
+    transform: translateX(-3px);
+  }
+
+  90% {
+    transform: translateX(3px);
+  }
+}
+
+/* Glow ring */
+.orb-glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--glow-idle) 0%, transparent 70%);
+  transition: background 0.8s ease;
+  animation: pulse 3.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+.orb-svg {
+  width: 240px;
+  height: 240px;
+  display: block;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 8px 32px rgba(120, 60, 255, 0.4));
+  transition: filter 0.8s ease;
+}
+
+.lottie-layer {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.clouds-layer {
+  width: 200px;
+  height: 200px;
+  clip-path: circle(88px at 100px 100px);
+  opacity: 0.12;
+  filter: invert(1) brightness(2) blur(1px);
+  z-index: 1;
+}
+
+.sparkles-layer {
+  width: 40px;
+  height: 40px;
+  margin-top: -15px;
+  margin-left: 10px;
+  filter: invert(1) brightness(1.8) blur(0.3px);
+  opacity: 0.6;
+  mix-blend-mode: screen;
+  z-index: 3;
+}
+
+#lottie-bg-sparkles {
+  width: 80px;
+  height: 80px;
+  filter: invert(1) brightness(1.2);
+  opacity: 0.2;
+  z-index: 0;
+}
+
+.sparkle-icon {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+.sparkle-icon svg path {
+  fill: currentColor !important;
+}
+
+/* Answer area */
+.answer-area {
+  min-height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem 0 1rem;
+  padding: 0 1rem;
+  text-align: center;
+}
+
+.idle-msg {
+  font-size: 17px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.answer-text {
+  font-family: 'Instrument Serif', serif;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: 1.4;
+  animation: reveal 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes reveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(8px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.question-echo {
+  font-size: 15px;
+  color: var(--text-hint);
+  font-style: italic;
+  margin-top: 0.5rem;
+  animation: fadeIn 0.4s ease both 0.3s;
+  opacity: 0;
+  animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Input */
+.input-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.q-input {
+  flex: 1;
+  padding: 13px 20px;
+  border-radius: 999px;
+  border: 1.5px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text);
+  font-family: 'National Park', sans-serif;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  backdrop-filter: blur(8px);
+}
+
+.q-input::placeholder {
+  color: var(--text-hint);
+}
+
+.q-input:focus {
+  border-color: var(--input-focus);
+  background: rgba(255, 255, 255, 0.09);
+}
+
+.ask-btn {
+  padding: 13px 24px;
+  border-radius: 999px;
+  border: none;
+  background: linear-gradient(135deg, #a070f0 0%, #c090ff 100%);
+  color: white;
+  font-family: 'National Park', sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  transition: transform 0.15s, opacity 0.15s, box-shadow 0.2s;
+  box-shadow: 0 4px 20px rgba(160, 100, 255, 0.4);
+  white-space: nowrap;
+}
+
+.ask-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 28px rgba(160, 100, 255, 0.6);
+}
+
+.ask-btn:active {
+  transform: scale(0.97);
+}
+
+/* Legend */
+.legend {
+  display: flex;
+  gap: 18px;
+  margin-top: 1.75rem;
+  font-size: 14px;
+  color: var(--text-hint);
+  align-items: center;
+  letter-spacing: 0.5px;
+}
+
+.dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  margin-right: 5px;
+  vertical-align: middle;
+}
+
+.dot-yes {
+  background: #60c878;
+}
+
+.dot-maybe {
+  background: #e8c030;
+}
+
+.dot-no {
+  background: #e07070;
+}
+
+.divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Base stand shadow */
+.base-shadow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 14px;
+  background: radial-gradient(ellipse, rgba(80, 40, 180, 0.5) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+@keyframes cloudDrift {
+  0%,
+  100% {
+    transform: translateX(0)
+  }
+
+  50% {
+    transform: translateX(5px)
+  }
+}
