@@ -560,6 +560,118 @@
       idle: { s0: "#ede0ff", s1: "#c4a0f8", s2: "#7c50d8", glow: "rgba(160,100,255,0.45)", drop: "rgba(120,60,255,0.4)", text: "#c0a0ff" },
     };
 
+    const RANDOM_ORG_API_URL = "https://api.random.org/json-rpc/4/invoke";
+    const RANDOM_ORG_ENV_URL = ".env";
+    const RANDOM_ORG_API_KEY_ENV_NAME = "RANDOM_ORG_API_KEY";
+    let randomOrgApiKeyPromise;
+
+    function parseEnvFile(contents) {
+      return contents.split(/\r?\n/).reduce((env, line) => {
+        const trimmedLine = line.trim();
+
+        if (!trimmedLine || trimmedLine.startsWith('#')) {
+          return env;
+        }
+
+        const normalizedLine = trimmedLine.startsWith('export ') ? trimmedLine.slice(7).trim() : trimmedLine;
+        const separatorIndex = normalizedLine.indexOf('=');
+
+        if (separatorIndex === -1) {
+          return env;
+        }
+
+        const key = normalizedLine.slice(0, separatorIndex).trim();
+        let value = normalizedLine.slice(separatorIndex + 1).trim();
+
+        if ((value.startsWith('"') && value.endsWith('"')) ||
+          (value.startsWith("'") && value.endsWith("'"))) {
+          value = value.slice(1, -1);
+        }
+
+        env[key] = value;
+        return env;
+      }, {});
+    }
+
+    function getRandomOrgApiKey() {
+      if (!randomOrgApiKeyPromise) {
+        randomOrgApiKeyPromise = fetch(RANDOM_ORG_ENV_URL, { cache: 'no-store' })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Unable to load ${RANDOM_ORG_ENV_URL}: HTTP ${response.status}`);
+            }
+
+            return response.text();
+          })
+          .then(parseEnvFile)
+          .then(env => (env[RANDOM_ORG_API_KEY_ENV_NAME] || '').trim());
+      }
+
+      return randomOrgApiKeyPromise;
+    }
+
+    function getFallbackAnswerIndex() {
+      if (window.crypto?.getRandomValues) {
+        const randomValues = new Uint32Array(1);
+        window.crypto.getRandomValues(randomValues);
+        return randomValues[0] % ANSWERS.length;
+      }
+
+      return Math.floor(Math.random() * ANSWERS.length);
+    }
+
+    async function getRandomOrgAnswerIndex() {
+      const apiKey = await getRandomOrgApiKey();
+
+      if (!apiKey) {
+        throw new Error(`Missing RANDOM.ORG API key. Add ${RANDOM_ORG_API_KEY_ENV_NAME} to ${RANDOM_ORG_ENV_URL}.`);
+      }
+
+      const response = await fetch(RANDOM_ORG_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method: 'generateIntegers',
+          params: {
+            apiKey,
+            n: 1,
+            min: 0,
+            max: ANSWERS.length - 1,
+            replacement: true,
+          },
+          id: window.crypto?.randomUUID?.() || Date.now(),
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`RANDOM.ORG request failed with HTTP ${response.status}`);
+      }
+
+      const payload = await response.json();
+
+      if (payload.error) {
+        throw new Error(payload.error.message || 'RANDOM.ORG returned an error.');
+      }
+
+      const index = payload.result?.random?.data?.[0];
+
+      if (!Number.isInteger(index) || index < 0 || index >= ANSWERS.length) {
+        throw new Error('RANDOM.ORG returned an invalid answer index.');
+      }
+
+      return index;
+    }
+
+    async function getAnswerIndex() {
+      try {
+        return await getRandomOrgAnswerIndex();
+      } catch (error) {
+        console.warn('Falling back to browser randomness because RANDOM.ORG v4 is unavailable:', error);
+        return getFallbackAnswerIndex();
+      }
+    }
+
     function loadSparkles(container = document) {
       container.querySelectorAll('.sparkle-icon').forEach(el => {
         if (el.hasChildNodes()) return; // Already loaded
@@ -653,30 +765,33 @@
       idleMsg.style.display = 'none';
       answerBlock.style.display = 'none';
 
-      setTimeout(() => {
-        const pick = ANSWERS[Math.floor(Math.random() * ANSWERS.length)];
-        setOrbColor(pick.cat);
+      setTimeout(async () => {
+        try {
+          const pick = ANSWERS[await getAnswerIndex()];
+          setOrbColor(pick.cat);
 
-        const c = COLORS[pick.cat];
-        answerText.style.color = c.text;
-        answerText.style.textShadow = `0 0 20px ${c.glow}`;
-        answerText.innerHTML = pick.text;
-        loadSparkles(answerText);
+          const c = COLORS[pick.cat];
+          answerText.style.color = c.text;
+          answerText.style.textShadow = `0 0 20px ${c.glow}`;
+          answerText.innerHTML = pick.text;
+          loadSparkles(answerText);
 
-        if (question) {
-          questionEcho.textContent = `"${question.length > 50 ? question.slice(0, 47) + '...' : question}"`;
-          questionEcho.style.display = 'block';
-        } else {
-          questionEcho.style.display = 'none';
+          if (question) {
+            questionEcho.textContent = `"${question.length > 50 ? question.slice(0, 47) + '...' : question}"`;
+            questionEcho.style.display = 'block';
+          } else {
+            questionEcho.style.display = 'none';
+          }
+
+          // Re-trigger animation
+          answerText.style.animation = 'none';
+          answerText.offsetHeight;
+          answerText.style.animation = '';
+
+          answerBlock.style.display = 'block';
+        } finally {
+          busy = false;
         }
-
-        // Re-trigger animation
-        answerText.style.animation = 'none';
-        answerText.offsetHeight;
-        answerText.style.animation = '';
-
-        answerBlock.style.display = 'block';
-        busy = false;
       }, 560);
     }
 
