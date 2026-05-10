@@ -1,6 +1,6 @@
 # 🔮 Fortune Teller (Audentus)
 
-This repository contains the **Audentus** fortune-telling application.
+This repository contains the **Audentus** fortune-telling application. [![Netlify Status](https://api.netlify.com/api/v1/badges/59f62c4f-ee7c-4459-8755-d91e610b4e48/deploy-status)](https://app.netlify.com/projects/audentus/deploys)
 
 ## 📂 Project Structure
 
